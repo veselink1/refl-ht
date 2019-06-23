@@ -21,44 +21,36 @@ std::unordered_map<std::string, std::string> parse_arguments(int cargs, const ch
 
 int main(int cargs, const char *const vargs[])
 {
-    static const std::vector<std::string> supported_extensions{ ".cpp", ".h", ".hpp", ".h++" };
-
     auto process_start_time = std::chrono::high_resolution_clock::now();
 
     auto args = parse_arguments(cargs, vargs);
 
-    long total_source_files_cnt = 0;
-    long processed_source_files_cnt = 0;
-
-    for (auto&& entry : fs::recursive_directory_iterator(args["dir"]))
+    if (!args["verbose"].empty())
     {
-        auto filename = entry.path();
-        if (filename.has_extension() && std::find(supported_extensions.begin(), supported_extensions.end(), filename.extension()) != supported_extensions.end())
+        if (args["verbose"] == "y" || args["verbose"] == "yes")
         {
-            total_source_files_cnt++;
-            if (rht::engine::file_needs_processing(filename.c_str()))
-            {
-                processed_source_files_cnt++;
-                rht::engine::process_file(filename.c_str());
-            }
+            rht::util::enable_log_info();   
+        }
+        else if (args["verbose"] != "n" && args["verbose"] != "no")
+        {
+            std::cerr << "Argument '-verbose' must be one of y|yes|n|no!\n";
+            std::exit(-1);
         }
     }
+
+    rht::engine::process_file(fs::canonical(args["input"]).c_str());
 
     auto process_total_time = std::chrono::duration_cast<std::chrono::duration<double>>(
         std::chrono::high_resolution_clock::now() - process_start_time);
 
-    // For time precision.
     std::cout << std::fixed << std::setprecision(2);
-
-    std::cout << "Discovered " << total_source_files_cnt << " source file(s). "
-              << processed_source_files_cnt << " metadata file(s) created.\n"
-              << "Metadata processing took " << process_total_time.count() << "s and competed successfully.\n";
+    std::cout << "Metadata processing took " << process_total_time.count() << "s and competed successfully.\n";
 }
 
 std::unordered_map<std::string, std::string> parse_arguments(int cargs, const char* const* vargs)
 {
-    static const std::vector<std::string> known_args{ "dir" };
-    static const std::vector<std::string> required_args{ "dir" };
+    static const std::vector<std::string> known_args{ "input", "verbose" };
+    static const std::vector<std::string> required_args{ "input" };
     std::unordered_map<std::string, std::string> args;
 
     for (int i = 1; i < cargs; i++)
@@ -75,11 +67,11 @@ std::unordered_map<std::string, std::string> parse_arguments(int cargs, const ch
             std::string value{std::next(arg.begin(), delim + 1), arg.end()};
             if (std::find(known_args.begin(), known_args.end(), key) == known_args.end()) 
             {
-                std::cerr << "Unknown argument " << key << "!\n";
+                std::cerr << "Unknown argument '-" << key << "=<value>'!\n";
                 std::cerr << "Known arguments: ";
                 for (auto&& known_arg : known_args)
                 {
-                    std::cerr << known_arg << " ";
+                    std::cerr << '-' << known_arg << "=<value> ";
                 }
                 std::cerr << '\n';
                 std::exit(-1);

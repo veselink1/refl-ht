@@ -6,6 +6,7 @@
 #ifndef REFL_HT_CORE_HPP
 #define REFL_HT_CORE_HPP
 #include <clang-c/Index.h>
+#include "rht-fs.hpp"
 #include "rht-util.hpp"
 
 namespace rht::core
@@ -36,6 +37,17 @@ struct TypeInfo
 
     TypeInfo(const std::string &name, const std::string &attributes)
         : Name(name), Attributes(attributes), Members{}
+    {
+    }
+};
+
+struct ModuleInfo
+{
+    fs::path Path;
+    std::vector<core::TypeInfo> Types;
+
+    ModuleInfo(const fs::path &path, const std::vector<core::TypeInfo> &types)
+        : Path(path), Types(types)
     {
     }
 };
