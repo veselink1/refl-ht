@@ -4,11 +4,10 @@
 Minimum refl-cpp version required: v0.3.0
 
 ## How to use:
-Just annotate the desired struct/class/member with the REFL() macro and do #include REFL_METADATA_FILE at the end of the file (will be appended automatically if omitted).
-If the target filename is User.hpp then append #include "User.reflmd" at the bottom. Reflmd files are C++ source files and do not require to be treated specially by the compiler. They contain the required REFL_TYPE/FUNC/FIELD macros, that would otherwise need to be manually written out.
+Just annotate the desired struct/class/member with the REFL() macro and add #include REFL_METADATA_FILE at the end of the file (will be appended automatically if omitted). Reflmd files are C++ source files and do not require to be treated specially by the compiler. They contain the required REFL_TYPE/FUNC/FIELD macros, that would otherwise need to be manually written out.
 
 Then run the following command to generate appropriate .reflmd files for discovered header files used by the input .cpp file.
-./refl-ht -input=&lt;path-to-input-cpp-file&gt; -verbose=&lt;y|n&gt;
+./refl-ht -input=&lt;path-to-input-cpp-file&gt; -verbose=&lt;yes|no&gt;
 
 ## How to compile: 
 g++ -std=c++17 -O2 -Wall -I/usr/lib/llvm-7/include rht-main.cpp -lstdc++fs -lclang -o refl-ht
