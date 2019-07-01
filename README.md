@@ -10,7 +10,13 @@ Then run the following command to generate appropriate .reflmd files for discove
 ./refl-ht -input=&lt;path-to-input-cpp-file&gt; -verbose=&lt;yes|no&gt;
 
 ## How to compile: 
-g++ -std=c++17 -O2 -Wall -I/usr/lib/llvm-7/include rht-main.cpp -lstdc++fs -lclang -o refl-ht
+On Linux-based OSes:
+`g++ -std=c++17 -O2 -Wall -I/usr/lib/llvm-7/include rht-main.cpp -lstdc++fs -lclang -o refl-ht`
+On Windows 10 (using WSL):
+(Build with the above command then type)
+`echo bash -c './refl-ht %*' >> refl-ht.bat`
+(Or write ./refl-ht %* to a .bat file manually)
+
 (Use appropriate path for your version of llvm libs. On Ubuntu, you might need to install libclang.)
 
 ## Example:
