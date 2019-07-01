@@ -26,6 +26,11 @@ std::string to_string(const CXString &str)
     return result;
 }
 
+std::string to_string(const std::exception& e) 
+{
+    return std::string("(") + typeid(e).name() + "): " + e.what();
+}
+
 namespace detail
 {
 static std::atomic_bool log_info_enabled{false};
@@ -57,7 +62,7 @@ std::ostream &log_info()
 
 std::ostream &log_error()
 {
-    return std::cerr << "E: ";
+    return std::cerr << "ERR: ";
 }
 
 struct SourceLocation

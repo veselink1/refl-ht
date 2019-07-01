@@ -1,9 +1,15 @@
+#define REFL_METADATA_FILE "reflmd/A.hpp"
 #include "refl.hpp"
+
+namespace myns
+{
 
 struct A
 {
-    $refl() int x;
-    $refl() int y;
+    REFL() int x;
+    REFL() int y;
 };
 
-#include "A.reflmd"
+} // namespace myns
+
+#include REFL_METADATA_FILE
