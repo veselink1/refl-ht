@@ -25,7 +25,7 @@ On Windows 10 (using WSL):
 
 struct UserModel
 {
-    REFL(property(read_only)) uint64_t id;
+    REFL(property(read)) uint64_t id;
     REFL(property(/* default: read_write */) std::string first_name;
     REFL(property()) std::string last_name;
     REFL(property()) std::string email;
