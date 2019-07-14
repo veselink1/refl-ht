@@ -1,5 +1,5 @@
 # RHT - Refl-cpp Header Tool (WIP)
-## A C++ preprocessor that generated static reflection metadata for refl-cpp.
+## A C++ preprocessor that generated static reflection metadata for [refl-cpp](https://github.com/veselink1/refl-cpp).
 
 Minimum refl-cpp version required: v0.3.1
 
@@ -23,7 +23,7 @@ Then run the following command to generate appropriate .reflmd files for discove
 ```
 struct UserModel
 {
-    REFL(property(read_only)) uint64_t id;
+    REFL(property(read)) uint64_t id;
     REFL(property(/* default: read_write */) std::string first_name;
     REFL(property()) std::string last_name;
     REFL(property()) std::string email;
