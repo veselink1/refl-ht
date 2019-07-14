@@ -143,7 +143,7 @@ std::string read_to_string(const char *filename)
     std::string line;
     while (std::getline(fs, line))
     {
-        ss << line;
+        ss << line << "\n";
     }
     return ss.str();
 }

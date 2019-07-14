@@ -163,7 +163,6 @@ std::vector<core::ModuleInfo> process_translation_unit(CXTranslationUnit unit, c
                 pending_macro_args = extract_macro_args(source_filestream_it->second, child);
                 modules.insert({source_filename, core::ModuleInfo(source_filename, {})});
             }
-            return CXChildVisit_Continue;
         default:
             return CXChildVisit_Continue;
         }
