@@ -15,10 +15,13 @@ Then run the following command to generate appropriate .reflmd files for discove
 
 (Use appropriate path for your version of llvm libs. On Ubuntu, you might need to install libclang.)
 
+## Screenshots
+![](https://raw.githubusercontent.com/veselink1/refl-ht/master/example/ui-toolkit-example/output.png)
+
 ## Download
 **Prebuilt binaries - coming coon**
 
-## Example:
+## Example
 
 ```
 struct UserModel
