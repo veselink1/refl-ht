@@ -38,15 +38,15 @@ int main(int cargs, const char *const vargs[]) try
         }
     }
 
-    rht::engine::process_file(fs::canonical(args["input"]).c_str());
+    rht::engine::process_file(rht::fs::canonical(args["input"]).c_str());
 
     auto process_total_time = std::chrono::duration_cast<std::chrono::duration<double>>(
         std::chrono::high_resolution_clock::now() - process_start_time);
 
     std::cout << std::fixed << std::setprecision(2);
-    std::cout << "Metadata processing took " << process_total_time.count() << "s and competed successfully.\n";
+    std::cout << "[" << rht::fs::filename(vargs[0]) << "]: Metadata processing took " << process_total_time.count() << "s. [exited]\n";
 }
-catch (const std::exception &e)
+catch (const std::exception& e)
 {
     rht::util::log_error() << rht::util::to_string(e) << "\n";
 }
@@ -73,7 +73,7 @@ std::unordered_map<std::string, std::string> parse_arguments(int cargs, const ch
             {
                 std::cerr << "Unknown argument '-" << key << "=<value>'!\n";
                 std::cerr << "Known arguments: ";
-                for (auto &&known_arg : known_args)
+                for (auto&& known_arg : known_args)
                 {
                     std::cerr << '-' << known_arg << "=<value> ";
                 }
@@ -85,7 +85,7 @@ std::unordered_map<std::string, std::string> parse_arguments(int cargs, const ch
         }
     }
 
-    for (auto &&required_arg : required_args)
+    for (auto&& required_arg : required_args)
     {
         if (args[required_arg].size() == 0)
         {

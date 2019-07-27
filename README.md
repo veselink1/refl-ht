@@ -1,4 +1,4 @@
-# RHT - Refl-cpp Header Tool (WIP)
+# RHT - Refl-cpp Header Tool (BETA)
 ## A C++ preprocessor that generated static reflection metadata for [refl-cpp](https://github.com/veselink1/refl-cpp).
 
 Minimum refl-cpp version required: v0.3.1
@@ -11,7 +11,7 @@ Then run the following command to generate appropriate .reflmd files for discove
 `./refl-ht -input=<filename> -verbose=<y|n>`
 
 ## How to compile: 
-`g++ -std=c++17 -O2 -Wall -I/usr/lib/llvm-7/include rht-main.cpp -lstdc++fs -lclang -o refl-ht`
+`g++ -std=c++17 -O2 -Wall -I/usr/lib/llvm-7/include rht-main.cpp -lclang -o refl-ht`
 
 (Use appropriate path for your version of llvm libs. On Ubuntu, you might need to install libclang.)
 
@@ -37,4 +37,6 @@ struct UserModel
 ```
 
 ## Changelog
+
+- v0.4.0 - refl-ht now no-longer depends on std::filesystem and does not require special linker flags.
 - v0.3.1 - Fixed a bug where input files would get improperly formatted.

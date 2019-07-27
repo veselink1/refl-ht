@@ -33,7 +33,7 @@ void dbg_print_cursor(CXCursor cursor, const char *msg = "")
                      << clang_getCursorKindSpelling(clang_getCursorKind(cursor)) << "'\n";
 }
 
-void move_to(std::ifstream &fs, unsigned line, unsigned column)
+void move_to(std::ifstream& fs, unsigned line, unsigned column)
 {
     fs.clear();
     fs.seekg(0, std::ios::beg);
@@ -65,7 +65,7 @@ size_t seek_closing_parens(FwdIt begin, FwdIt end)
     return std::string::npos;
 }
 
-std::string extract_macro_args(std::ifstream &fs, CXCursor cursor)
+std::string extract_macro_args(std::ifstream& fs, CXCursor cursor)
 {
     auto loc = util::get_source_location(cursor);
     auto name_offset = util::array_size(macro_name); // includes terminating \0, takes care of (
@@ -103,8 +103,8 @@ std::vector<core::ModuleInfo> process_translation_unit(CXTranslationUnit unit, c
         if (pending_macro_args)
         {
             auto location = util::get_source_location(child);
-            auto &module = modules.find(location.filename)->second;
-            auto &types = module.Types;
+            auto& module = modules.find(location.filename)->second;
+            auto& types = module.Types;
 
             auto macro_args = *pending_macro_args;
             pending_macro_args.reset();
@@ -128,7 +128,7 @@ std::vector<core::ModuleInfo> process_translation_unit(CXTranslationUnit unit, c
                 }
 
                 auto member_type = clang_getCursorKind(child) == CXCursor_FieldDecl ? core::MemberType::Field : core::MemberType::Function;
-                auto &type = types.back();
+                auto& type = types.back();
                 type.Members.push_back(core::MemberInfo(member_type, name, macro_args));
                 break;
             }
@@ -151,12 +151,11 @@ std::vector<core::ModuleInfo> process_translation_unit(CXTranslationUnit unit, c
             if (std::strcmp(clang_getCString(clang_getCursorDisplayName(child)), marker_name) == 0)
             {
                 auto source_filename = util::get_source_location(child).filename;
-                auto full_parent_path = fs::canonical(fs::path(source_filename).parent_path());
 
                 auto source_filestream_it = open_files.find(source_filename);
                 if (source_filestream_it == open_files.end())
                 {
-                    util::log_info() << "Adding " << source_filename << " to module index...\n";
+                    util::log_info() << "Adding " << fs::relative(source_filename) << " to module index...\n";
                     source_filestream_it = open_files.insert({source_filename, std::ifstream(source_filename, std::ios::in)}).first;
                 }
 
@@ -170,7 +169,7 @@ std::vector<core::ModuleInfo> process_translation_unit(CXTranslationUnit unit, c
 
     std::vector<core::ModuleInfo> module_vec{};
     module_vec.reserve(modules.size());
-    for (auto &&entry : modules)
+    for (auto&& entry : modules)
     {
         module_vec.emplace_back(std::move(entry.second));
     }
@@ -178,14 +177,14 @@ std::vector<core::ModuleInfo> process_translation_unit(CXTranslationUnit unit, c
     return module_vec;
 }
 
-std::stringstream generate_metadata_source(const std::vector<core::TypeInfo> &types)
+std::stringstream generate_metadata_source(const std::vector<core::TypeInfo>& types)
 {
     std::stringstream ss;
-    for (auto &&t : types)
+    for (auto&& t : types)
     {
         ss << type_macro_name << "(" << t.Name
            << (t.Attributes.empty() ? "" : ", " + t.Attributes) << ")\n";
-        for (auto &&m : t.Members)
+        for (auto&& m : t.Members)
         {
             switch (m.Type)
             {
@@ -212,21 +211,21 @@ std::string generated_header()
     return ss.str();
 }
 
-void process_module(const rht::core::ModuleInfo &module)
+void process_module(const rht::core::ModuleInfo& module)
 {
     using namespace std::string_literals;
 
-    util::log_info() << "Processing module " << module.Path << "...\n";
+    util::log_info() << "Processing module " << fs::relative(module.Path) << "...\n";
     auto source = generate_metadata_source(module.Types);
 
-    fs::path path(module.Path);
+    const std::string& path = module.Path;
 
     auto input_source = util::read_to_string(path.c_str());
     std::ofstream input_fs(path.c_str());
 
     std::regex md_include_regex("#include\\s+"s + include_macro_name);
     std::regex md_define_regex("#define\\s+"s + include_macro_name + "\\s+\".+\"\\s*");
-    std::string md_define("#define "s + include_macro_name + " \"" + metadata_folder_name + "/" + path.filename().string() + "\"\n");
+    std::string md_define("#define "s + include_macro_name + " \"" + metadata_folder_name + "/" + fs::filename(path) + "\"\n");
 
     if (std::regex_search(input_source, md_define_regex))
     {
@@ -241,22 +240,22 @@ void process_module(const rht::core::ModuleInfo &module)
 
     if (!std::regex_search(input_source, md_include_regex))
     {
-        util::log_info() << "Missing an '#include " << include_macro_name << "' directive in " << path.c_str()
+        util::log_info() << "Missing an '#include " << include_macro_name << "' directive in " << fs::relative(path)
                          << ". It was added automatically at the end of the source file.\n";
 
         input_fs << "\n#include " << include_macro_name << "\n";
     }
 
-    auto md_path = path.parent_path() / metadata_folder_name;
+    auto md_path = fs::concat(fs::parent_path(path), metadata_folder_name);
     fs::create_directory(md_path);
 
-    auto md_filename = md_path / path.filename();
+    auto md_filename = fs::concat(md_path, fs::filename(path));
 
-    util::log_info() << "Opening " << md_filename << " for writing...\n";
+    util::log_info() << "Opening " << fs::relative(md_filename) << " for writing...\n";
     std::ofstream output_fs(md_filename);
     output_fs << generated_header();
     output_fs << source.str();
-    util::log_info() << "Metadata written successfully to " << md_filename << "\n\n";
+    util::log_info() << "Metadata written successfully to " << fs::relative(md_filename) << "\n\n";
 }
 
 void process_file(const char *filename)
@@ -266,7 +265,7 @@ void process_file(const char *filename)
         "c++",
         "-DREFL_PREPROCESSOR"};
 
-    util::log_info() << "Parsing input file " << filename << "...\n\n";
+    util::log_info() << "Parsing input file " << fs::relative(filename) << "...\n\n";
 
     CXIndex index = clang_createIndex(0, 0);
     CXTranslationUnit unit;
@@ -292,13 +291,13 @@ void process_file(const char *filename)
     clang_disposeTranslationUnit(unit);
     clang_disposeIndex(index);
 
-    for (auto &&module : modules)
+    for (auto&& module : modules)
     {
         try
         {
             process_module(module);
         }
-        catch (const std::exception &e)
+        catch (const std::exception& e)
         {
             util::log_error() << "Processing module " << module.Path << " failed! " 
                 + util::to_string(e) + "\n";

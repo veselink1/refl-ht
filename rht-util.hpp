@@ -9,7 +9,7 @@
 #include <clang-c/Index.h>
 #include "rht-fs.hpp"
 
-std::ostream &operator<<(std::ostream &stream, const CXString &str)
+std::ostream& operator<<(std::ostream& stream, const CXString& str)
 {
     stream << clang_getCString(str);
     clang_disposeString(str);
@@ -19,7 +19,7 @@ std::ostream &operator<<(std::ostream &stream, const CXString &str)
 namespace rht::util
 {
 
-std::string to_string(const CXString &str)
+std::string to_string(const CXString& str)
 {
     std::string result{clang_getCString(str)};
     clang_disposeString(str);
@@ -50,7 +50,7 @@ void disable_log_info()
     detail::log_info_enabled.store(false);
 }
 
-std::ostream &log_info()
+std::ostream& log_info()
 {
     if (detail::log_info_enabled.load())
     {
@@ -60,7 +60,7 @@ std::ostream &log_info()
     return detail::dummy_ostream;
 }
 
-std::ostream &log_error()
+std::ostream& log_error()
 {
     return std::cerr << "ERR: ";
 }
@@ -72,7 +72,7 @@ struct SourceLocation
     unsigned column;
 };
 
-std::ostream &operator<<(std::ostream &stream, const SourceLocation &loc)
+std::ostream& operator<<(std::ostream& stream, const SourceLocation& loc)
 {
     stream << loc.filename << ":" << loc.line << ":" << loc.column;
     return stream;
@@ -85,7 +85,7 @@ SourceLocation get_source_location(CXCursor c)
     CXString filename;
     unsigned int line, column;
 
-    clang_getPresumedLocation(location, &filename, &line, &column);
+    clang_getPresumedLocation(location,& filename,& line,& column);
 
     return {to_string(filename), line, column};
 }
@@ -97,9 +97,9 @@ constexpr size_t array_size(const T (&arr)[N])
 }
 
 template <typename T>
-bool contains(const T &item, std::initializer_list<T> items)
+bool contains(const T& item, std::initializer_list<T> items)
 {
-    for (auto &&other : items)
+    for (auto&& other : items)
     {
         if (item == other)
             return true;
@@ -108,12 +108,11 @@ bool contains(const T &item, std::initializer_list<T> items)
 }
 
 template <typename F>
-bool visit_children(CXCursor cursor, F &&f)
+bool visit_children(CXCursor cursor, F&& f)
 {
     return clang_visitChildren(cursor, [](CXCursor child, CXCursor parent, CXClientData client_data) -> CXChildVisitResult {
         return (*reinterpret_cast<std::remove_reference_t<F> *>(client_data))(child, parent);
-    },
-                               &f);
+    }, &f);
 }
 
 std::string get_full_name(CXCursor cursor)

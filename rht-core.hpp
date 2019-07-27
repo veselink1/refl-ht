@@ -6,7 +6,6 @@
 #ifndef REFL_HT_CORE_HPP
 #define REFL_HT_CORE_HPP
 #include <clang-c/Index.h>
-#include "rht-fs.hpp"
 #include "rht-util.hpp"
 
 namespace rht::core
@@ -23,7 +22,7 @@ struct MemberInfo
     std::string Name;
     std::string Attributes;
 
-    MemberInfo(MemberType type, const std::string &name, const std::string &attributes)
+    MemberInfo(MemberType type, const std::string& name, const std::string& attributes)
         : Type(type), Name(name), Attributes(attributes)
     {
     }
@@ -35,7 +34,7 @@ struct TypeInfo
     std::string Attributes;
     std::vector<MemberInfo> Members;
 
-    TypeInfo(const std::string &name, const std::string &attributes)
+    TypeInfo(const std::string& name, const std::string& attributes)
         : Name(name), Attributes(attributes), Members{}
     {
     }
@@ -43,10 +42,10 @@ struct TypeInfo
 
 struct ModuleInfo
 {
-    fs::path Path;
+    std::string Path;
     std::vector<core::TypeInfo> Types;
 
-    ModuleInfo(const fs::path &path, const std::vector<core::TypeInfo> &types)
+    ModuleInfo(const std::string& path, const std::vector<core::TypeInfo>& types)
         : Path(path), Types(types)
     {
     }
