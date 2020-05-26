@@ -1,4 +1,4 @@
-# refl-ht - [refl-cpp](https://github.com/veselink1/refl-cpp) Header Tool (v0.4.0-beta)
+# refl-ht (Discontinued) - [refl-cpp](https://github.com/veselink1/refl-cpp) Header Tool (v0.4.0-beta) 
 ## A fast, portable and non-intrusive C++ preprocessor that generates static reflection metadata for [refl-cpp](https://github.com/veselink1/refl-cpp).
 
 Minimum refl-cpp version required: v0.3.1
